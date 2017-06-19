@@ -1,0 +1,70 @@
+﻿<Window x:Class="L1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:L1"
+        mc:Ignorable="d"
+        xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+        Title="MainWindow" Height="500" Width="650">
+    <DockPanel LastChildFill="true">
+        <ToolBar DockPanel.Dock="Top">
+            
+            <Separator />
+            <Button Command="{Binding StartCommand}">Start</Button>
+            <Separator />
+
+            <Button Command="{Binding ContinueCommand}">Continue</Button>
+            <TextBlock Text="Steps count:"></TextBlock>
+            <TextBox Text="{Binding ContinueStepsCount}" MinWidth="50"></TextBox>
+            <TextBlock Text="Snapshot every:"></TextBlock>
+            <TextBox Text="{Binding SnapshotStepsCount}" MinWidth="50"></TextBox>
+            <Separator/>
+            <Button Command="{Binding StepForwardCommand}">Forward</Button>
+            <TextBlock Text="by:"></TextBlock>
+            <TextBox Text="{Binding ForwardStepsCount}" MinWidth="50"></TextBox>
+            <Separator/>
+            <Button Command="{Binding StepBackwardCommand}">Backward</Button>
+        </ToolBar>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <oxy:PlotView Grid.Column="0" Model="{Binding Plot}" />
+
+            <DockPanel Grid.Column="1" LastChildFill="true">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="Settings">
+                        <StackPanel>
+                            <TextBlock Text="Population capacity:"/>
+                            <TextBox Text="{Binding PopulationCapacity}" MinWidth="100"></TextBox>
+                            <TextBlock Text="Crossover probability:"/>
+                            <TextBox Text="{Binding CrossoverProbability}" MinWidth="100"></TextBox>
+                            <TextBlock Text="Mutation probability:"/>
+                            <TextBox Text="{Binding MutationProbability}" MinWidth="100"></TextBox>
+                        </StackPanel>                        
+                    </GroupBox>
+                    <DockPanel Grid.Row="1" LastChildFill="true">
+                        <TextBlock DockPanel.Dock="Top" Text="Steps executed:"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ListBox ItemsSource="{Binding Steps.Items}" SelectionMode="Single" SelectedItem="{Binding CurrentStep}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}"></TextBlock>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Grid>                
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>
