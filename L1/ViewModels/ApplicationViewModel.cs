@@ -60,7 +60,7 @@ namespace L1.ViewModels
         }
 
 
-        private int _populationCapacity = 50;
+        private int _populationCapacity = 1000;
         public int PopulationCapacity
         {
             get { return _populationCapacity; }
@@ -120,7 +120,7 @@ namespace L1.ViewModels
             }
         }
 
-        private double _crossoverProbability = 0.5;
+        private double _crossoverProbability = 0.1;
         public double CrossoverProbability
         {
             get
@@ -138,7 +138,7 @@ namespace L1.ViewModels
             }
         }
 
-        private double _mutationProbability = 0.01;
+        private double _mutationProbability = 0;
         public double MutationProbability
         {
             get

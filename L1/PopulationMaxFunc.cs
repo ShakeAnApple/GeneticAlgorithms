@@ -76,11 +76,13 @@ namespace L1
         protected override double Decode(Gene<byte>[] genes)
         {
             string binaryString = "";
-            for (var i = 0; i < genes.Length; i++)
-            {
-                binaryString = genes[i].Value + binaryString;
-            }
-            var intervalNum = Convert.ToInt32(binaryString, 2);
+            var bs = String.Concat(genes.Select(g => g.Value.ToString()));
+            //for (var i = 0; i < genes.Length; i++)
+            //{
+            //    binaryString = genes[i].Value + binaryString;
+            //}
+            //var intervalNum = Convert.ToInt32(binaryString, 2);
+            var intervalNum = Convert.ToInt32(bs, 2);
             var intervalLength = (_maxX - _minX) / 2048;
             return _minX + intervalNum * intervalLength;
         }
@@ -138,7 +140,8 @@ namespace L1
         protected override Tuple<Gene<byte>[], Gene<byte>[]> CrossoverFunction(Chromosome ch1, Chromosome ch2)
         {
             var r = new Random();
-            var crossoverPoint = r.Next(1, ch1.Genes.Count - 1);
+            //var crossoverPoint = r.Next(1, ch1.Genes.Count - 1);
+            var crossoverPoint = (int)ch1.Genes.Count / 2;
 
             var ch1Tail = new List<Gene<byte>>(ch1.Genes.Skip(crossoverPoint));
             var ch2Tail = new List<Gene<byte>>(ch2.Genes.Skip(crossoverPoint));

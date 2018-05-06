@@ -9,5 +9,10 @@
 
         public T Value { get { return _value; } }
         private T _value;
+
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
     }
 }

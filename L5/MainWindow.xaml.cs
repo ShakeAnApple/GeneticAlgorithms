@@ -1,5 +1,4 @@
-﻿using L4.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace L4
+namespace L5
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,9 +22,6 @@ namespace L4
     {
         public MainWindow()
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
-
             InitializeComponent();
             DataContext = new ApplicationViewModel();
         }

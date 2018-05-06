@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7B8FAF24-FB46-49BF-8B9D-FBFA89B785C9}</ProjectGuid>
+    <ProjectGuid>{CF60B58E-187C-4965-867E-B7FA2CD524E3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>L4</RootNamespace>
-    <AssemblyName>L4</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <RootNamespace>L5</RootNamespace>
+    <AssemblyName>L5</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,12 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OxyPlot">
-      <HintPath>..\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
-    </Reference>
-    <Reference Include="OxyPlot.Wpf">
-      <HintPath>..\packages\OxyPlot.Wpf.1.0.0\lib\net45\OxyPlot.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -62,13 +55,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DelegateCommand.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Model\FunctionHelper.cs" />
-    <Compile Include="Model\Result.cs" />
-    <Compile Include="StringFormatConverter.cs" />
+    <Compile Include="FunctionHelper.cs" />
+    <Compile Include="Model\NormalRandom.cs" />
+    <Compile Include="PopulationMinOptimumEvStartegy.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="ViewModels\BaseNotifiableViewModel.cs" />
-    <Compile Include="ViewModels\PlotHelper.cs" />
     <Compile Include="ViewModels\StepItemViewModel.cs" />
     <Compile Include="ViewModels\StepsViewModel.cs" />
     <Page Include="MainWindow.xaml">
@@ -85,13 +76,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\FunctionNodesFabric.cs" />
-    <Compile Include="Model\FunctionGenerator.cs" />
-    <Compile Include="Model\INode.cs" />
-    <Compile Include="Model\FunctionTree.cs" />
-    <Compile Include="Model\Measure.cs" />
-    <Compile Include="Model\Range.cs" />
-    <Compile Include="PopulationFunctions.cs" />
+    <Compile Include="Model\Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -117,7 +102,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\GeneticAlgorithms.Core\GeneticAlgorithms.Core.csproj">
       <Project>{c8f1312b-6458-4c5b-ac71-658f274367a7}</Project>

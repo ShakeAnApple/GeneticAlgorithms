@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.Linq;
-using L2.ViewModels;
-using L2.Model;
+using L5.ViewModels;
+using L5.Model;
 using System.IO;
-using System.Text;
 
-namespace L2
+namespace L5
 {
     public class ApplicationViewModel : BaseNotifiableViewModel
     {
@@ -20,7 +19,9 @@ namespace L2
 
         private StepItemViewModel _currentStep;
         private int _forwardStepsCount = 1;
-        private const string stepsFilePath = @"c:\tmp\out_ga_la2.txt";
+        private const string stepsFilePath = @"c:\tmp\out_ga_la5.txt";
+
+        private const int DIMENTIONS_COUNT = 2;
 
         public StepItemViewModel CurrentStep
         {
@@ -28,12 +29,12 @@ namespace L2
             set
             {
                 _currentStep = value;
-                AppendStep(_currentStep);
+                AppendStep(_currentStep.Data);
             }
         }
 
 
-        private PopulationMinOptimum _population;
+        private PopulationMinOptimumEvStartegy _population;
 
         public ApplicationViewModel()
         {
@@ -47,17 +48,6 @@ namespace L2
 
 
         #region dynamic properties
-        private int _populationCapacity = 50;
-        public int PopulationCapacity
-        {
-            get { return _populationCapacity; }
-            set
-            {
-                _populationCapacity = value;
-                base.OnPropertyChanged("PopulationCapacity");
-            }
-        }
-
         private int _continueStepsCount;
         public int ContinueStepsCount
         {
@@ -70,42 +60,6 @@ namespace L2
                     _continueStepsCount = value;
                 }
                 base.OnPropertyChanged("ContinueStepsCount");
-            }
-        }
-
-        private double _crossoverProbability = 0.5;
-        public double CrossoverProbability
-        {
-            get
-            {
-                return _crossoverProbability;
-            }
-            set
-            {
-                if (value > 1) { _crossoverProbability = 1; }
-                else if (value < 0) { _crossoverProbability = 0; }
-                else
-                {
-                    _crossoverProbability = value;
-                }
-            }
-        }
-
-        private double _mutationProbability = 0;
-        public double MutationProbability
-        {
-            get
-            {
-                return _mutationProbability;
-            }
-            set
-            {
-                if (value > 1) { _mutationProbability = 1; }
-                else if (value < 0) { _mutationProbability = 0; }
-                else
-                {
-                    _mutationProbability = value;
-                }
             }
         }
         #endregion
@@ -127,17 +81,13 @@ namespace L2
 
         private void Start()
         {
-            _population = new PopulationMinOptimum(3, _crossoverProbability, _mutationProbability, -65.536, 65.536);
-            _population.GenerateAndFill(_populationCapacity);
+            _population = new PopulationMinOptimumEvStartegy(DIMENTIONS_COUNT, DIMENTIONS_COUNT, -65.536, 65.536);
+            _population.GenerateAndFill(1);
 
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            var str = string.Format("{{{0}}}",
-                            string.Join(", ", _population.Select(res => string.Format("{{{0}}}", string.Join(",", res.coords)))));
-
-            File.AppendAllText(stepsFilePath, str + Environment.NewLine);
-
+            AppendStep(_population.First());
         }
 
         private void StepForward()
@@ -179,19 +129,18 @@ namespace L2
             var nextStep = new StepItemViewModel {
                 Name = String.Format("Step {0} Population count: {1}", (Steps.Items.Count + 1), _population.Count()),
                 Data = result,
-                BestSolution = result.OrderBy(p => p.coords[2]).First().ToString()
+                BestSolution = result.ToString()
             };
 
             return nextStep;
         }
 
-        private void AppendStep(StepItemViewModel step)
+        private void AppendStep(Point data)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            var str = string.Format("{{{0}}}", 
-                            string.Join(", ", _currentStep.Data.Select(res => string.Format("{{{0}}}", string.Join(",", res.coords)))));
+            var str = string.Format("{{{0}}}", string.Format("{{{0},{1}}}", string.Join(",", data.coords), data.result));
 
             File.AppendAllText(stepsFilePath, str + Environment.NewLine);
         }

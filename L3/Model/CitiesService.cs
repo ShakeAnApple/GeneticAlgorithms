@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace L3.Model
 {
@@ -39,6 +41,29 @@ namespace L3.Model
                     _distanceMap[i, j] = -1;
                 }
             }
+
+            ////
+            //foreach(var city1 in result.OrderBy(r => r.number))
+            //{
+            //    foreach (var city2 in result.OrderBy(r => r.number))
+            //    {
+            //        _distanceMap[city1.number, city2.number] = (int)city1.CountDist(city2);
+            //    }
+            //}
+
+            //var sb = new StringBuilder();
+            //for (int i = 0; i < result.Count; i++)
+            //{
+            //    var lineBuilder = new StringBuilder();
+            //    for (int j = 0; j < result.Count; j++)
+            //    {
+            //        lineBuilder.Append(_distanceMap[i, j] + " ");
+            //    }
+            //    sb.AppendLine(lineBuilder.ToString());
+            //}
+
+            //File.WriteAllText("C:\\tmp\\matrix.txt", sb.ToString());
+            /////
 
             return result;
         }

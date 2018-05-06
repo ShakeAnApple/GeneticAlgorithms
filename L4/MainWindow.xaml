@@ -5,8 +5,79 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:L4"
         mc:Ignorable="d"
+        xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <DockPanel LastChildFill="true">
+        <ToolBar DockPanel.Dock="Top">
+
+            <Separator />
+            <Button Command="{Binding StartCommand}" Content="Start" />
+            <Separator />
+
+            <Button Command="{Binding ContinueCommand}" Content="Continue" />
+            <Label Content="Steps count:" />
+            <TextBox Text="{Binding ContinueStepsCount}" MinWidth="50" />
+            <Label Content="Snapshot every:" />
+            <TextBox Text="{Binding SnapshotStepsCount}" MinWidth="50" />
+            <Separator/>
+            <Button Command="{Binding StepForwardCommand}" Content="Forward" />
+            <Label Content="by:" />
+            <TextBox Text="{Binding ForwardStepsCount}" MinWidth="50" />
+            <Separator/>
+            <Button Command="{Binding StepBackwardCommand}" Content="Backward" />
+        </ToolBar>
+
+        <GroupBox Header="Settings" DockPanel.Dock="Top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Grid.Row="0">
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Population capacity:"/>
+                    <TextBox Text="{Binding PopulationCapacity}" MinWidth="100"></TextBox>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Grid.Row="0">
+                    <TextBlock Text="Crossover probability:"/>
+                    <TextBox Text="{Binding CrossoverProbability}" MinWidth="100"></TextBox>
+                </StackPanel>
+                <StackPanel Grid.Column="4" Grid.Row="0">
+                    <TextBlock Text="Mutation probability:"/>
+                    <TextBox Text="{Binding MutationProbability}" MinWidth="100"></TextBox>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <TextBlock DockPanel.Dock="Top" Text="{Binding BestSolution}"/>
+        <!--<TextBlock DockPanel.Dock="Top" Text="{Binding BestSolutionTree}"/>-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <oxy:PlotView Grid.Column="0" Grid.Row="0" Model="{Binding Plots[0]}" />
+            <oxy:PlotView Grid.Column="1" Grid.Row="0" Model="{Binding Plots[1]}" />
+            <oxy:PlotView Grid.Column="2" Grid.Row="0" Model="{Binding Plots[2]}" />
+            <oxy:PlotView Grid.Column="3" Grid.Row="0" Model="{Binding Plots[3]}" />
+            <oxy:PlotView Grid.Column="0" Grid.Row="1" Model="{Binding Plots[4]}" />
+            <oxy:PlotView Grid.Column="1" Grid.Row="1" Model="{Binding Plots[5]}" />
+            <oxy:PlotView Grid.Column="2" Grid.Row="1" Model="{Binding Plots[6]}" />
+            <oxy:PlotView Grid.Column="3" Grid.Row="1" Model="{Binding Plots[7]}" />
+
+        </Grid>
+    </DockPanel>
 </Window>

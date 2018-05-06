@@ -23,5 +23,10 @@
         }
 
         public double[] coords;
+
+        public override string ToString()
+        {
+            return string.Format("{0},{1},{2}", coords[0], coords[1], coords[2]);
+        }
     }
 }

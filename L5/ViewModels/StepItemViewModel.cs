@@ -1,12 +1,12 @@
-﻿using L2.Model;
+﻿using L5.Model;
 using System.Collections.Generic;
 
-namespace L2.ViewModels
+namespace L5.ViewModels
 {
     public class StepItemViewModel
     {
         public string Name { get; set; }
-        public List<Point> Data { get; set; }
+        public Point Data { get; set; }
         public int PopulationCount { get; set; }
         public string BestSolution { get; set; }
 

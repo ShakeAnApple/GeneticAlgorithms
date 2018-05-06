@@ -44,6 +44,16 @@ namespace GeneticAlgorithms.Core
                     return Genes[index];
                 }
             }
+
+            internal Chromosome clone()
+            {
+                return new Chromosome(Genes.ToArray());
+            }
+
+            public override string ToString()
+            {
+                return string.Join(", ", Genes.Select(g => g.ToString()));
+            }
         }
 
         protected abstract Gene<TGene>[] Encode(TSolution solution);
@@ -64,8 +74,11 @@ namespace GeneticAlgorithms.Core
         private List<Chromosome> _reproductionResult;
 
         private List<Chromosome> _bestSolutions;
+        private const double BestSolutionsPercent = 0.5;
 
         private int _populationCapacity;
+
+        private Random _r;
 
         public Population(int chromosomeLength, double crossoverProbability, double mutationProbability)
         {
@@ -75,6 +88,14 @@ namespace GeneticAlgorithms.Core
 
             _chromosomes = new List<Chromosome>();
             _bestSolutions = new List<Chromosome>();
+
+            _r = new Random();
+        }
+
+        public Population(int chromosomeLength, double crossoverProbability, double mutationProbability, int capacity) 
+            : this(chromosomeLength, crossoverProbability, mutationProbability)
+        {
+            _populationCapacity = capacity;
         }
 
         protected void Fill(List<TSolution> solutions)
@@ -82,7 +103,10 @@ namespace GeneticAlgorithms.Core
             _chromosomes.AddRange(
                 solutions.Select(s => new Chromosome(Encode(s)))
             );
-            _populationCapacity = _chromosomes.Count;
+            if (_populationCapacity == 0)
+            {
+                _populationCapacity = _chromosomes.Count;
+            }
         }
 
         protected void DoReproduction()
@@ -115,7 +139,6 @@ namespace GeneticAlgorithms.Core
             var badSolutionsCount = 0;
             var funcResultsForReproduction = new List<TFuncResult>();
 
-
             foreach (var funcResult in orderedResults)
             {
                 var elementsCount = Math.Round(funcResultsProbabilities[funcResult] * _populationCapacity);
@@ -136,14 +159,20 @@ namespace GeneticAlgorithms.Core
             }
             funcResultsForReproduction = funcResultsForReproduction
                                                 .OrderByDescending(res => funcResultsProbabilities[res])
-                                                .Take(funcResultsForReproduction.Count - _bestSolutions.Count)
+                                                //.Take(funcResultsForReproduction.Count - (int)(_populationCapacity*BestSolutionsPercent))
+                                                .Take(funcResultsForReproduction.Count)
                                                 .ToList();
             _reproductionResult.AddRange(
                 funcResultsForReproduction.Select(res => solutionsByFuncResult[res])
             );
 
-            _reproductionResult.AddRange(_bestSolutions);
-            _bestSolutions.Add(_reproductionResult.First());
+            //_reproductionResult.AddRange(_bestSolutions);
+            _bestSolutions = new List<Chromosome>();
+            for (int i = 0; i < (int)(_populationCapacity * BestSolutionsPercent); i++)
+            {
+                _bestSolutions.Add(_reproductionResult[i].clone());
+            }
+            //_bestSolutions.Add(_reproductionResult.First());
 
             ///////////
             //var temp = Decode(_reproductionResult.First().Genes.ToArray());
@@ -153,10 +182,21 @@ namespace GeneticAlgorithms.Core
             //var fres = debug.Select(s => CalculateFunctionValue(s)).OrderByDescending(s => s).ToList();
             ///////////
 
-            while (_bestSolutions.Count >= _populationCapacity)
-            {
-                _bestSolutions.RemoveAt(0);
-            }
+            //while (_bestSolutions.Count >= _populationCapacity)
+            //{
+            //    _bestSolutions.RemoveAt(0);
+            //}
+            /////////////////////
+            //Debug.Print("\nAfter reproduction:");
+            //Debug.Print("Func res:");
+            //Debug.Print(String.Join("\n", _reproductionResult.Select(ch => CalculateFunctionValue(Decode(ch.Genes.ToArray()))).OrderBy(r => r)));
+
+            //Debug.Print("\nBest:");
+            //Debug.Print("Func res:");
+            //Debug.Print(String.Join("\n", _bestSolutions.Select(ch => CalculateFunctionValue(Decode(ch.Genes.ToArray()))).OrderBy(r => r)));
+            ////////////////////
+            //Debug.Print("Solutions:\n");
+            //Debug.Print(String.Join("\n", _reproductionResult.Select(ch => Decode(ch.Genes.ToArray())).OrderByDescending(r => CalculateFunctionValue(r))));
         }
 
         protected void DoCrossover()
@@ -166,17 +206,35 @@ namespace GeneticAlgorithms.Core
                 throw new ApplicationException("Population is empty!");
             }
 
+
             _chromosomes = new List<Chromosome>();
 
-            var r = new Random();
+            if (_populationCapacity == 1)
+            {
+                _chromosomes.AddRange(_reproductionResult);
+            }
+
+            
+            //var solutionsForCrossoverCount = Math.Round(_crossoverProbability * (_reproductionResult.Count + _bestSolutions.Count) / 2);
             var solutionsForCrossoverCount = Math.Round(_crossoverProbability * _reproductionResult.Count / 2);
+
+            //if (solutionsForCrossoverCount % 2 != 0)
+            //{
+            //    solutionsForCrossoverCount++;
+            //}
+            //while (solutionsForCrossoverCount > _reproductionResult.Count)
+            //{
+            //    var bestSolutionToReproduce = _bestSolutions.First();
+            //    _reproductionResult.Add(bestSolutionToReproduce);
+            //    _bestSolutions.Remove(bestSolutionToReproduce);
+            //}
             for (int i = 0; i < solutionsForCrossoverCount; i++)
             {
                 int i1 = 0, i2 = 0;
                 while (i1 == i2)
                 {
-                    i1 = r.Next(0, _reproductionResult.Count - 1);
-                    i2 = r.Next(0, _reproductionResult.Count - 1);
+                    i1 = _r.Next(0, _reproductionResult.Count - 1);
+                    i2 = _r.Next(0, _reproductionResult.Count - 1);
                 }
 
                 var s1 = _reproductionResult[i1];
@@ -189,10 +247,24 @@ namespace GeneticAlgorithms.Core
                 _reproductionResult.RemoveAt(i1);
                 _reproductionResult.RemoveAt(i2);
             }
-            _chromosomes.AddRange(_reproductionResult);
+            //_chromosomes.AddRange(_reproductionResult);
+            _chromosomes.AddRange(_bestSolutions.Take(_populationCapacity - _chromosomes.Count));
+            //_chromosomes.AddRange(_bestSolutions);
 
             //var debug = _chromosomes.Select(s => Decode(s.Genes.ToArray())).OrderByDescending(s => s);
             //var fres = debug.Select(s => CalculateFunctionValue(s)).OrderByDescending(s=>s).ToList();
+
+            //////////////////////////////////
+            //Debug.Print("\nAfter crossover:");
+            //Debug.Print("Func res:\n");
+            //Debug.Print(String.Join("\n", _chromosomes.Select(ch => CalculateFunctionValue(Decode(ch.Genes.ToArray()))).OrderBy(res => res)));
+            //Debug.Print("Best:");
+            //Debug.Print("Func res:");
+            //Debug.Print(String.Join("\n", _bestSolutions.Take(_populationCapacity - _chromosomes.Count).Select(ch => CalculateFunctionValue(Decode(ch.Genes.ToArray()))).OrderBy(res => res)));
+            //////////////////////////
+            
+            //Debug.Print("\nSolutions:\n");
+            //Debug.Print(String.Join("\n", _chromosomes.Select(ch => Decode(ch.Genes.ToArray())).OrderByDescending(res => CalculateFunctionValue(res))));
         }
 
         protected void DoMutations()
@@ -237,4 +309,6 @@ namespace GeneticAlgorithms.Core
         }
         #endregion
     }
+
+    // 
 }

@@ -43,6 +43,15 @@ namespace L3
             ClearPopulationCommand = new DelegateCommand(obj => ClearPopulation());
 
             _citiesService = new CitiesService(srcFilePath);
+            //var path = new int[] { 1, 8, 38, 31, 44, 18, 7, 28, 6, 37, 19, 27, 17, 43, 30, 36, 46, 33, 20, 47, 21, 32, 39, 48, 5, 42, 24, 10, 45, 35, 4, 26, 2, 29, 34, 41, 16, 22, 3, 23, 14, 25, 13, 11, 12, 15, 40, 9 };
+            //var cities = new City[path.Length];
+            //for (int i = 0; i < path.Length; i++)
+            //{
+            //    var city = _citiesService.Cities.First(c => c.number == (path[i] - 1));
+            //    cities[i] = city;
+            //}
+            //var dist = CountSumDistance(cities);
+            //int a = 0;
         }
 
         #region dynamic properties
@@ -210,6 +219,7 @@ namespace L3
             {
                 dist += _citiesService.GetDistance(cities[i], cities[i - 1]);
             }
+            dist += _citiesService.GetDistance(cities[cities.Length - 1], cities[0]);
             return dist;
         }
     }

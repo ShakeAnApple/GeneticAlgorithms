@@ -87,41 +87,66 @@ namespace L3
             var ch1Cities = ch1.Genes.Select(g => g.Value).ToArray();
             var ch2Cities = ch2.Genes.Select(g => g.Value).ToArray();
 
+            var resParentDist1 = CalculateFunctionValue(ch1Cities);
+            var resParentDist2 = CalculateFunctionValue(ch2Cities);
+
             var r = new Random();
             for (int i = 0; i < 2; i++)
             {
-                children[i] = new City?[_solutionLength]; 
-
-                var availableCities = new List<City>(_citiesService.Cities);
-
-                var startCityNum = r.Next(_solutionLength);
-                var startCity = availableCities[startCityNum];
-                //var startCity = availableCities.First(c => c.number == r.Next(_solutionLength));
-                var prevCity = startCity;                
-
-                availableCities.Remove(prevCity);
-
-                var nextCity = new City(); 
-                for (int j = 0; j < _solutionLength - 1; j++)
+                for(var startCityNum = 0; startCityNum <= _solutionLength; startCityNum++)
                 {
-                    var distanceCh1 = _citiesService.GetDistance(prevCity, ch1Cities[prevCity.number]);
-                    var distanceCh2 = _citiesService.GetDistance(prevCity, ch2Cities[prevCity.number]);
-                    nextCity = distanceCh1 < distanceCh2 ? ch1Cities[prevCity.number] : ch2Cities[prevCity.number];
+                    children[i] = new City?[_solutionLength];
 
-                    if (children[i][nextCity.number] != null)
+                    var availableCities = new List<City>(_citiesService.Cities);
+
+                    City startCity = new City();
+                    if (startCityNum == _solutionLength)
                     {
-                        var nextCityNum = r.Next(_solutionLength - j - 1);
-                        //nextCity = availableCities.First(c => c.number == nextCityNum);
-                        nextCity = availableCities[nextCityNum];
+                        startCity = availableCities[r.Next(_solutionLength)];
+                    }
+                    else
+                    {
+                        startCity = availableCities[startCityNum];
                     }
 
-                    availableCities.Remove(nextCity);
+                    var prevCity = startCity;
 
-                    children[i][prevCity.number] = nextCity;
-                    prevCity = nextCity;
+                    availableCities.Remove(prevCity);
+
+                    var nextCity = new City();
+                    for (int j = 0; j < _solutionLength - 1; j++)
+                    {
+                        var distanceCh1 = _citiesService.GetDistance(prevCity, ch1Cities[prevCity.number]);
+                        var distanceCh2 = _citiesService.GetDistance(prevCity, ch2Cities[prevCity.number]);
+                        nextCity = distanceCh1 < distanceCh2 ? ch1Cities[prevCity.number] : ch2Cities[prevCity.number];
+
+                        while (children[i][nextCity.number] != null)
+                        {
+                            var nextCityNum = r.Next(_solutionLength - j - 1);
+                            //nextCity = availableCities.First(c => c.number == nextCityNum);
+                            nextCity = availableCities[nextCityNum];
+                        }
+
+                        availableCities.Remove(nextCity);
+
+                        children[i][prevCity.number] = nextCity;
+                        prevCity = nextCity;
+                    }
+                    
+                    children[i][nextCity.number] = startCity;
+
+                    var resDist = CalculateFunctionValue(children[i].Select(c => c.Value).ToArray());
+
+                    if (resDist < resParentDist1 && resDist < resParentDist2)
+                    {
+                        break;
+                    }
                 }
 
-                children[i][nextCity.number] = startCity; 
+                //var startCityNum = r.Next(_solutionLength);
+                //var startCity = availableCities.First(c => c.number == r.Next(_solutionLength));
+
+                
             }
             return new Tuple<Gene<City>[], Gene<City>[]>(
                 children[0].Select(c => new Gene<City>(c.Value)).ToArray(), 
@@ -175,7 +200,7 @@ namespace L3
                 base.DoMutations();
             }
 
-            return ConvertToPath(this.First());
+            return ConvertToPath(this.OrderBy(ch => CalculateFunctionValue(ch)).First());
         }
 
         private City[] ConvertToPath(City[] solution)
@@ -183,7 +208,7 @@ namespace L3
             var result = new City[solution.Length];
             result[0] = solution.First(c => c.number == 0);
 
-            for (int i = 1; i < solution.Length - 1; i++)
+            for (int i = 1; i < solution.Length; i++)
             {
                 result[i] = solution[result[i - 1].number];
             }
